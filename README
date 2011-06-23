@@ -29,7 +29,7 @@ Read the commented section at the beginning of
 "src/pywapi.py" 
 
 Method documentation can be found from file
-"method-doc"
+"Method Reference"
 
 Thanks to Eugene Kaznacheev for writing original
 pywapi library!
