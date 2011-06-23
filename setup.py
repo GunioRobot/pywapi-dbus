@@ -1,4 +1,4 @@
-from distutils.core import setup
+from oms_distutils import setup # Using custom system for installing because installing as D-Bus service
 
 setup(name = "pywapi-dbus",
     version = "0.1a1",
@@ -7,7 +7,7 @@ setup(name = "pywapi-dbus",
     author_email = "sasu.karttunen@tpnet.fi",
     url = "https://github.com/skfin/pywapi-dbus",
     packages = ['pywapidbus'],
-    scripts = ["pywapi-dbus"],
+    dbus_files=['pywapidbus/org.pywapi.Weather.service.in'],
     long_description = """D-Bus Python Weather API Service is intended to provide weather information through D-Bus. It's main goal is to provide same functionality as Python Weather API provides as Python library. D-Bus Python Weather API Service can be used in all programming languages that has working D-Bus libraries available.""", 
     classifiers=[
       'Development Status :: 3 - Alpha',
