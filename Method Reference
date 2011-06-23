@@ -1,0 +1,57 @@
+################# METHOD REFERENCE ###################
+org.pywapi.Weather
+
+	org.pywapi.Weather /
+	org.pywapi.Weather /GoogleAPI	-Google Weather API Methods
+		method void org.pywapi.Weather.gCity()
+			Replies with city name and a code of state/province (if any) of location.
+		method void org.pywapi.Weather.gCityList(QString country)
+			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.
+		method void org.pywapi.Weather.gCountrylist()
+			Replies with a list of countries.
+		method void org.pywapi.Weather.gCurrentCondition()
+			Replies with current condition in location.
+		method void org.pywapi.Weather.gCurrentDateTime()
+			Replies with a server time.
+		method void org.pywapi.Weather.gCurrentHumidity()
+			Replies with a current humidity. Notify that localized word "Humidity" and percentage mark (%) is included.
+		method void org.pywapi.Weather.gCurrentIcon()
+			Replies with a path to condition icon used by Google
+		method void org.pywapi.Weather.gCurrentTemperature(QString units)
+			Replies with current temperature. There are two options for Parameter "units": "metric" for Celsius and "imperial" for Fahrenheit
+		method void org.pywapi.Weather.gCurrentWindCondition()
+			Replies with a current wind condition. Notify that localized word "Wind" and wind direction (ex. NW) is included.
+		method void org.pywapi.Weather.gForecastCondition(int day)
+			Replies with a condition for day. Parameter "day" can be between 0 and 3, where 0 is today.
+		method void org.pywapi.Weather.gForecastDate()
+			Replies with a date when forecast was generated
+		method void org.pywapi.Weather.gForecastDayOfWeek(int day)
+			Replies with a short format of day of week for day. See gForecastCondition for parameter "day".
+		method void org.pywapi.Weather.gForecastIcon(int day)
+			Replies with a path to condition icon for day used by Google
+		method void org.pywapi.Weather.gForecastTMax(int day)
+			Replies with a maximum (highest) temperature for day. Uses default unit set by locale in gSetLocation!
+		method void org.pywapi.Weather.gForecastTMin(int day)
+			Replies with a minimum (lowest) temperature for day. Uses default unit set by locale in gSetLocation!
+		method void org.pywapi.Weather.gPostalCode()
+			Replies with a postal code of location. Non-US locations reply with the city name.
+		method void org.pywapi.Weather.gSetLocation(QString location, QString locale)
+			Sets the location and locale. Location can be a zip code (10001); city name, state (weather=woodland,PA);
+			city name, country (weather=london,england); latitude/longitude(weather=,,,30670000,104019996) or possibly other.
+			Parameter locale should be ISO 3166-1 alpha-2 country code. It sets the language of replies and units in forecasts.
+		method void org.pywapi.Weather.gUnitSystem()
+			Replies with the current unit system used. Either "SI" for metric or "US" for imperial.
+		method QString org.freedesktop.DBus.Introspectable.Introspect()
+			Replies with a methods listed in XML-document
+
+#################### ERROR CODES #####################
+
+All error responses are integers.
+
+0 - Operation successfull but nothing to reply. Not really an error.
+100 - No location set
+101 - Python Weather API error. Pywapi has failed for unknown reason.
+102 - Invalid location. The location wasn't found from API.
+103 - Unknown unit format. "unit"-parameter has been something else than "metric" or "imperial".
+104 - Incorrect day ID. The "day"-parameter's value is out of range (0-3)
+1337 - User error. You have failed. Go away.

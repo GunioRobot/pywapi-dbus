@@ -31,6 +31,7 @@ try:
     from PyQt4.QtCore import QCoreApplication
 except:
     print "It seems that you don't have required PyQt4's QtCore module installed."
+    exit(1)
 
 # Import dbus service and mainloop-qt. Needed to run a dbus service.
 try:
@@ -38,12 +39,14 @@ try:
     from dbus.mainloop.qt import DBusQtMainLoop
 except:
     print "You don't seem to have required dbus Python libraries."
+    exit(1)
 
 # Import pywapi. Since pywapi is not very common library to systems have, we provide it with pywapi-dbus. It's licensed under MIT license.
 try:
     import pywapi
 except:
     print "Oops, you have no Python Weather API. Though, pywapi-dbus should ship it. If you think it is our fault, contact us."
+    exit(1)
 
 print "Imported."
 
@@ -59,7 +62,7 @@ class Main(dbus.service.Object):
     # Initializing our dbus service 
     def __init__(self):
         busName = dbus.service.BusName('org.pywapi.Weather', bus = dbus.SessionBus())
-        dbus.service.Object.__init__(self, busName, '/Weather')
+        dbus.service.Object.__init__(self, busName, '/GoogleAPI')
  
     # GOOGLE PART STARTS HERE !!! (functions prefixed with g)
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.

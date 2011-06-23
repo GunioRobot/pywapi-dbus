@@ -1,0 +1,37 @@
+########## D-Bus Python Weather API Service ##########
+
+Author: Sasu Karttunen
+<sasu.karttunen@tpnet.fi>
+skfin @ freenode and ircnet
+
+D-Bus Python Weather API Service is intended to
+provide weather information through D-Bus. It's
+main goal is to provide same functionality as
+Python Weather API provides as Python library.
+
+D-Bus Python Weather API Service can be used
+in all programming languages that has working D-Bus
+libraries available.
+
+D-Bus Python Weather API Service depends on:
+PyQt4 QtCore module
+PyQt4 D-Bus module
+Python XML module
+Python Urllib
+Python Weather API (included!)
+
+D-Bus Python Weather API Service is licensed
+under GNU Lesser General Public License version 3.
+For more information, read "LICENSE" file.
+
+Python Weather API is licensed under MIT License.
+Read the commented section at the beginning of
+"src/pywapi.py" 
+
+Method documentation can be found from file
+"method-doc"
+
+Thanks to Eugene Kaznacheev for writing original
+pywapi library!
+
+######################################################
