@@ -26,7 +26,7 @@ For more information, read "LICENSE" file.
 
 Python Weather API is licensed under MIT License.
 Read the commented section at the beginning of
-"src/pywapi.py" 
+"pywapi-dbus/pywapi.py" 
 
 Method documentation can be found from file
 "Method Reference"
