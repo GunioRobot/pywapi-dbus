@@ -3,7 +3,7 @@
 #
 #    Copyright 2011 Sasu Karttunen <sasu.karttunen@tpnet.fi>
 #
-#    This file is part of pywapi-dbus.
+#    This file is part of D-Bus Python Weather API Service (pywapi-dbus).
 #
 #    pywapi-dbus is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
