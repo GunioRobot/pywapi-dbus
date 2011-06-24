@@ -28,7 +28,7 @@ Useful or not? Who knows. (: """
 try:
     from PyQt4.QtCore import QCoreApplication
 except:
-    print "It seems that you don't have required PyQt4's QtCore module installed."
+    print ("It seems that you don't have required PyQt4's QtCore module installed.")
     exit(1)
 
 # Import dbus service and mainloop-qt. Needed to run a dbus service.
@@ -36,14 +36,14 @@ try:
     import dbus.service
     from dbus.mainloop.qt import DBusQtMainLoop
 except:
-    print "You don't seem to have required dbus Python libraries."
+    print ("You don't seem to have required dbus Python libraries.")
     exit(1)
 
 # Import pywapi. Since pywapi is not very common library to systems have, we provide it with pywapi-dbus. It's licensed under MIT license.
 try:
     import pywapi
 except:
-    print "Oops, you have no Python Weather API. Though, pywapi-dbus should ship it. If you think it is our fault, contact us."
+    print ("Oops, you have no Python Weather API. Though, pywapi-dbus should ship it. If you think it is our fault, contact us.")
     exit(1)
 
 # Return codes! Integer numbers are easier for client program to handle since pywapi-dbus is ment to be used as backend.
@@ -64,7 +64,7 @@ class Main(dbus.service.Object):
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
     # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
     @dbus.service.method('org.pywapi.Weather', in_signature = 'ss')
-    def gSetLocation(self, location, locale):
+    def setLocation(self, location, locale):
         try:
             self.google_pywapi = pywapi.get_weather_from_google(location, locale)
         except:
@@ -78,7 +78,7 @@ class Main(dbus.service.Object):
     
     # Replies with a current city name and area (state, province or something like that)
     @dbus.service.method('org.pywapi.Weather')
-    def gCity(self):
+    def city(self):
         try: # This thing here checks if location is set.
             self.google_pywapi
         except AttributeError:
@@ -88,7 +88,7 @@ class Main(dbus.service.Object):
     
     # Replies with a current location's postal code (or city name if non-US city, I guess...)
     @dbus.service.method('org.pywapi.Weather')
-    def gPostalCode(self):
+    def postalCode(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -98,7 +98,7 @@ class Main(dbus.service.Object):
     
     # Replies with a forecast's generation date (format: YYYY-MM-DD)
     @dbus.service.method('org.pywapi.Weather')
-    def gForecastDate(self):
+    def forecastDate(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -108,7 +108,7 @@ class Main(dbus.service.Object):
     
     # Replies with a server date and time
     @dbus.service.method('org.pywapi.Weather')
-    def gCurrentDateTime(self):
+    def currentDateTime(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -119,7 +119,7 @@ class Main(dbus.service.Object):
     # Replies with currently used unit system. Used in forecasts.
     # This value is based on locale used in gSetLocation. Doesn't affect gCurrentTemperature though.
     @dbus.service.method('org.pywapi.Weather')
-    def gUnitSystem(self):
+    def unitSystem(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -129,7 +129,7 @@ class Main(dbus.service.Object):
     
     # Replies with a current condition of location (Cloudy or etc.).
     @dbus.service.method('org.pywapi.Weather')
-    def gCurrentCondition(self):
+    def currentCondition(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -139,7 +139,7 @@ class Main(dbus.service.Object):
     
     # Replies with a current temperature of location in Celsius or Fahrenheits
     @dbus.service.method('org.pywapi.Weather', in_signature = 's')
-    def gCurrentTemperature(self, units):
+    def currentTemperature(self, units):
         try:
             self.google_pywapi
         except AttributeError:
@@ -154,7 +154,7 @@ class Main(dbus.service.Object):
 
     # Replies with a current air humidity. The output kind of sucks, but it's not our problem 8)
     @dbus.service.method('org.pywapi.Weather')
-    def gCurrentHumidity(self):
+    def currentHumidity(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -164,7 +164,7 @@ class Main(dbus.service.Object):
     
     # Replies with a Google icon of current weather condition (but why? is a good question).
     @dbus.service.method('org.pywapi.Weather')
-    def gCurrentIcon(self):
+    def currentIcon(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -174,7 +174,7 @@ class Main(dbus.service.Object):
     
     # Replies with a current wind condition. The result kind of sucks (again) but it's Google, not us!
     @dbus.service.method('org.pywapi.Weather')
-    def gCurrentWindCondition(self):
+    def currentWindCondition(self):
         try:
             self.google_pywapi
         except AttributeError:
@@ -185,7 +185,7 @@ class Main(dbus.service.Object):
     # These functions take day number as attribute. 0 is today, 1 is tomorrow and so on.
     # Replies with a day of week (short format)
     @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def gForecastDayOfWeek(self, day):
+    def forecastDayOfWeek(self, day):
         try:
             self.google_pywapi
         except AttributeError:
@@ -197,7 +197,7 @@ class Main(dbus.service.Object):
     
     # Replies with a condition in forecast (not current condition!).
     @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def gForecastCondition(self, day):
+    def forecastCondition(self, day):
         try:
             self.google_pywapi
         except AttributeError:
@@ -207,7 +207,7 @@ class Main(dbus.service.Object):
     
     # Replies with a max (highest) temperature. Uses default unit set by locale!
     @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def gForecastTMax(self, day):
+    def forecastTMax(self, day):
         try:
             self.google_pywapi
         except AttributeError:
@@ -217,7 +217,7 @@ class Main(dbus.service.Object):
     
     # Replies with a min (lowest) temperature. Uses default unit set by locale!
     @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def gForecastTMin(self, day):
+    def forecastTMin(self, day):
         try:
             self.google_pywapi
         except AttributeError:
@@ -227,7 +227,7 @@ class Main(dbus.service.Object):
     
     # Replies with a forecast condition icon (from Google)
     @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def gForecastIcon(self, day):
+    def forecastIcon(self, day):
         try:
             self.google_pywapi
         except AttributeError:
@@ -236,13 +236,13 @@ class Main(dbus.service.Object):
         return forecastIcon
 
     @dbus.service.method('org.pywapi.Weather')
-    def gCountrylist(self):
+    def countryList(self):
         googleCountries = pywapi.get_countries_from_google()
         return googleCountries
     
     # Replies a list of cities in country
     @dbus.service.method('org.pywapi.Weather', in_signature = 's')
-    def gCityList(self, country):
+    def cityList(self, country):
         googleCities = pywapi.get_cities_from_google(country)
         return googleCities
           
