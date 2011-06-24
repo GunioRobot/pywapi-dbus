@@ -1,5 +1,8 @@
 #Copyright (c) 2009 Eugene Kaznacheev <qetzal@gmail.com>
 
+#Slightly modified by Sasu Karttunen <sasu.karttunen@tpnet.fi>
+#for using with pywapi-dbus
+
 #Permission is hereby granted, free of charge, to any person
 #obtaining a copy of this software and associated documentation
 #files (the "Software"), to deal in the Software without
@@ -16,7 +19,6 @@
 #EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 #OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 #NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-#HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 #WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #OTHER DEALINGS IN THE SOFTWARE.
@@ -72,7 +74,7 @@ def get_weather_from_google(location_id, hl = ''):
         'forecast_information': ('city', 'postal_code', 'latitude_e6', 'longitude_e6', 'forecast_date', 'current_date_time', 'unit_system'),
         'current_conditions': ('condition','temp_f', 'temp_c', 'humidity', 'wind_condition', 'icon')
     }           
-    for (tag, list_of_tags2) in data_structure.iteriteritems():
+    for (tag, list_of_tags2) in data_structure.iteritems():
         tmp_conditions = {}
         for tag2 in list_of_tags2:
             try: 

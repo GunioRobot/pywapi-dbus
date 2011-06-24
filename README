@@ -18,7 +18,7 @@ PyQt4 QtCore module
 PyQt4 D-Bus module
 Python XML module
 Python Urllib
-Python Weather API (included!)
+Slightly modified Python Weather API (included!)
 
 D-Bus Python Weather API Service is licensed
 under GNU Lesser General Public License version 3.
