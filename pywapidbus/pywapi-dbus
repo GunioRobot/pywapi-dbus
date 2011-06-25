@@ -20,7 +20,7 @@
 import sys, os 
 
 def main():
-    import src.main
+    import pywapidbus.main
 
 if __name__ == "__main__":
     try: 

@@ -1,9 +1,8 @@
 ################# METHOD REFERENCE ###################
 org.pywapi.Weather
-
 	org.pywapi.Weather /
 	org.pywapi.Weather /GoogleAPI	-Google Weather API Methods
-		method void org.pywapi.Weather.gCity()
+		method void org.pywapi.Weather.city()
 			Replies with city name and a code of state/province (if any) of location.
 		method void org.pywapi.Weather.cityList(QString country)
 			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.
@@ -49,7 +48,9 @@ org.pywapi.Weather
 All error responses are integers.
 
 0 - Operation successfull but nothing to reply. Not really an error.
-100 - No location set
+100 - D-Bus sender key not registered. D-Bus sender key is used to set location application specific.
+	  It's set by setLocation() method. Most likely client hasn't called setLocation() before other methods or
+	  D-Bus sender key is changed for some reason (reconnected to session bus perhaps?)
 101 - Python Weather API error. Pywapi has failed for unknown reason.
 102 - Invalid location. The location wasn't found from API.
 103 - Unknown unit format. "unit"-parameter has been something else than "metric" or "imperial".

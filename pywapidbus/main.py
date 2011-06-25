@@ -48,7 +48,7 @@ except:
 
 # Return codes! Integer numbers are easier for client program to handle since pywapi-dbus is ment to be used as backend.
 errSuccess = int(0) # not really an error :)
-errNoLocation = int(100)
+errUnregisteredSender = int(100)
 errPywapiError = int(101)
 errInvalidLocation = int(102)
 errUnknownUnit = int(103)
@@ -59,180 +59,182 @@ class Main(dbus.service.Object):
     def __init__(self):
         busName = dbus.service.BusName('org.pywapi.Weather', bus = dbus.SessionBus())
         dbus.service.Object.__init__(self, busName, '/GoogleAPI')
+        self.clients = {} # We use sender parameter in order to let multiple apps use this service at same time
  
     # GOOGLE PART STARTS HERE !!! (functions prefixed with g)
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
     # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'ss')
-    def setLocation(self, location, locale):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'ss', sender_keyword = 'sender')
+    def setLocation(self, location, locale, sender=None):
         try:
-            self.google_pywapi = pywapi.get_weather_from_google(location, locale)
+            self.clients[sender] = pywapi.get_weather_from_google(location, locale)
         except:
             return errPywapiError
         try: # Checks if the location is valid. Just checking if city exists, could be something else, no specific reason.
-            self.google_pywapi['forecast_information']['city']
+            self.clients[sender]['forecast_information']['city']
         except:
-            del self.google_pywapi # Delete reference to incorrect location :)
+            del self.clients[sender] # Delete reference to incorrect location :)
             return errInvalidLocation
+        print sender
         return errSuccess
     
     # Replies with a current city name and area (state, province or something like that)
-    @dbus.service.method('org.pywapi.Weather')
-    def city(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def city(self, sender=None):
         try: # This thing here checks if location is set.
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        City = self.google_pywapi['forecast_information']['city']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        City = self.clients[sender]['forecast_information']['city']
         return City
     
     # Replies with a current location's postal code (or city name if non-US city, I guess...)
-    @dbus.service.method('org.pywapi.Weather')
-    def postalCode(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def postalCode(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        PostalCode = self.google_pywapi['forecast_information']['postal_code']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        PostalCode = self.clients[sender]['forecast_information']['postal_code']
         return PostalCode
     
     # Replies with a forecast's generation date (format: YYYY-MM-DD)
-    @dbus.service.method('org.pywapi.Weather')
-    def forecastDate(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def forecastDate(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        forecastDate = self.google_pywapi['forecast_information']['forecast_date']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        forecastDate = self.clients[sender]['forecast_information']['forecast_date']
         return forecastDate
     
     # Replies with a server date and time
-    @dbus.service.method('org.pywapi.Weather')
-    def currentDateTime(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def currentDateTime(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        currentDateTime = self.google_pywapi['forecast_information']['current_date_time']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        currentDateTime = self.clients[sender]['forecast_information']['current_date_time']
         return currentDateTime
     
     # Replies with currently used unit system. Used in forecasts.
     # This value is based on locale used in gSetLocation. Doesn't affect gCurrentTemperature though.
     @dbus.service.method('org.pywapi.Weather')
-    def unitSystem(self):
+    def unitSystem(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        unitSystem = self.google_pywapi['forecast_information']['unit_system']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        unitSystem = self.clients[sender]['forecast_information']['unit_system']
         return unitSystem
     
     # Replies with a current condition of location (Cloudy or etc.).
-    @dbus.service.method('org.pywapi.Weather')
-    def currentCondition(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def currentCondition(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        currentCondition = self.google_pywapi['current_conditions']['condition']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        currentCondition = self.clients[sender]['current_conditions']['condition']
         return currentCondition
     
     # Replies with a current temperature of location in Celsius or Fahrenheits
-    @dbus.service.method('org.pywapi.Weather', in_signature = 's')
-    def currentTemperature(self, units):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 's', sender_keyword = 'sender')
+    def currentTemperature(self, units, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
         if units == "metric":
-            currentTemperature = self.google_pywapi['current_conditions']['temp_c']
+            currentTemperature = self.clients[sender]['current_conditions']['temp_c']
         elif units == "imperial":
-            currentTemperature = self.google_pywapi['current_conditions']['temp_f']
+            currentTemperature = self.clients[sender]['current_conditions']['temp_f']
         else:
             return errUnknownUnit
         return currentTemperature
 
     # Replies with a current air humidity. The output kind of sucks, but it's not our problem 8)
-    @dbus.service.method('org.pywapi.Weather')
-    def currentHumidity(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def currentHumidity(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        currentHumidity = self.google_pywapi['current_conditions']['humidity']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        currentHumidity = self.clients[sender]['current_conditions']['humidity']
         return currentHumidity
     
     # Replies with a Google icon of current weather condition (but why? is a good question).
-    @dbus.service.method('org.pywapi.Weather')
-    def currentIcon(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def currentIcon(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        currentIcon = self.google_pywapi['current_conditions']['icon']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        currentIcon = self.clients[sender]['current_conditions']['icon']
         return currentIcon
     
     # Replies with a current wind condition. The result kind of sucks (again) but it's Google, not us!
-    @dbus.service.method('org.pywapi.Weather')
-    def currentWindCondition(self):
+    @dbus.service.method('org.pywapi.Weather', sender_keyword = 'sender')
+    def currentWindCondition(self, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        currentWindCondition = self.google_pywapi['current_conditions']['wind_condition']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        currentWindCondition = self.clients[sender]['current_conditions']['wind_condition']
         return currentWindCondition
     
     # These functions take day number as attribute. 0 is today, 1 is tomorrow and so on.
     # Replies with a day of week (short format)
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def forecastDayOfWeek(self, day):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'i', sender_keyword = 'sender')
+    def forecastDayOfWeek(self, day, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
         if day > int(3):
             return errIncorrectDayID
-        forecastDayOfWeek = self.google_pywapi['forecasts'][day]['day_of_week']
+        forecastDayOfWeek = self.clients[sender]['forecasts'][day]['day_of_week']
         return forecastDayOfWeek
     
     # Replies with a condition in forecast (not current condition!).
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def forecastCondition(self, day):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'i', sender_keyword = 'sender')
+    def forecastCondition(self, day, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        forecastTodayCondition = self.google_pywapi['forecasts'][day]['condition']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        forecastTodayCondition = self.clients[sender]['forecasts'][day]['condition']
         return forecastTodayCondition
     
     # Replies with a max (highest) temperature. Uses default unit set by locale!
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def forecastTMax(self, day):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'i', sender_keyword = 'sender')
+    def forecastTMax(self, day, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        forecastTMax = self.google_pywapi['forecasts'][day]['high']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        forecastTMax = self.clients[sender]['forecasts'][day]['high']
         return forecastTMax
     
     # Replies with a min (lowest) temperature. Uses default unit set by locale!
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def forecastTMin(self, day):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'i', sender_keyword = 'sender')
+    def forecastTMin(self, day, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        forecastTMin = self.google_pywapi['forecasts'][day]['high']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        forecastTMin = self.clients[sender]['forecasts'][day]['high']
         return forecastTMin
     
     # Replies with a forecast condition icon (from Google)
-    @dbus.service.method('org.pywapi.Weather', in_signature = 'i')
-    def forecastIcon(self, day):
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'i', sender_keyword = 'sender')
+    def forecastIcon(self, day, sender=None):
         try:
-            self.google_pywapi
-        except AttributeError:
-            return errNoLocation
-        forecastIcon = self.google_pywapi['forecasts'][day]['icon']
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        forecastIcon = self.clients[sender]['forecasts'][day]['icon']
         return forecastIcon
 
     @dbus.service.method('org.pywapi.Weather')
