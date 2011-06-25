@@ -243,4 +243,6 @@ class Main(dbus.service.Object):
         return googleCities
           
 DBusGMainLoop(set_as_default = True)
-Main()
+app=Main()
+from gtk import main
+main()
