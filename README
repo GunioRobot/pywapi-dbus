@@ -15,8 +15,7 @@ libraries available.
 
 D-Bus Python Weather API Service depends on:
 Python ( 3.0> version >2.5 )
-PyQt4 QtCore module
-PyQt4 D-Bus module
+D-Bus Python bindings
 Python XML module
 Python Urllib
 Slightly modified Python Weather API (included!)

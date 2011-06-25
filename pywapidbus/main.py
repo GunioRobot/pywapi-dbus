@@ -24,17 +24,11 @@ is to provide same functionality as Python Weather API (pywapi) but
 as an daemon that provides information through dbus so that many apps can use it.
 Useful or not? Who knows. (: """
 
-# Importing QCoreApplication from QtCore. Needed for DBusQtMainLoop.
-try:
-    from PyQt4.QtCore import QCoreApplication
-except:
-    print ("It seems that you don't have required PyQt4's QtCore module installed.")
-    exit(1)
 
-# Import dbus service and mainloop-qt. Needed to run a dbus service.
+# Import dbus service and mainloop-glib. Needed to run a dbus service.
 try:
     import dbus.service
-    from dbus.mainloop.qt import DBusQtMainLoop
+    from dbus.mainloop.glib import DBusGMainLoop
 except:
     print ("You don't seem to have required dbus Python libraries.")
     exit(1)
@@ -248,7 +242,5 @@ class Main(dbus.service.Object):
         googleCities = pywapi.get_cities_from_google(country)
         return googleCities
           
-DBusQtMainLoop(set_as_default = True)
-app = QCoreApplication([])
-main = Main()
-app.exec_()
+DBusGMainLoop(set_as_default = True)
+Main()

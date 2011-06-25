@@ -20,7 +20,7 @@
 
 import sys, os 
 
-pidfile = os.path.join(os.environ['HOME'] + '.pywapi-dbus', 'pywapi-dbus.pid')
+pidfile = os.path.join(os.environ['HOME'], '.pywapi-dbus', 'pywapi-dbus.pid')
 print "\n" + pidfile
 path = os.path.dirname(pidfile)
 if not os.path.exists(path):
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         pid = os.fork() 
         if pid > 0:
             if os.path.isfile(pidfile):
-                print "\npywapi-dbus already running!
+                print "\npywapi-dbus already running!"
                 sys.exit(1)
             else:
             	f = open(pidfile, 'w')
