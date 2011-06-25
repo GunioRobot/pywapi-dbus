@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #    Copyright 2011 Sasu Karttunen <sasu.karttunen@tpnet.fi>
@@ -17,8 +17,14 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with pywapi-dbus.  If not, see <http://www.gnu.org/licenses/>.
+
 import sys, os 
 
+pidfile = os.path.join(os.environ['HOME'] + '/.pywapi-dbus', 'pywapi-dbus.pid')
+dir = os.path.dirname(pidfile)
+if not os.path.exists(dir):
+    os.makedirs(dir)
+    
 def main():
     import pywapidbus.main
 
@@ -32,18 +38,23 @@ if __name__ == "__main__":
         print >>sys.stderr, "fork #1 failed: %d (%s)" % (e.errno, e.strerror) 
         sys.exit(1)
 
-    os.chdir("/") 
+    os.chdir(os.environ['HOME']) 
     os.setsid() 
     os.umask(0) 
 
     try: 
         pid = os.fork() 
         if pid > 0:
-            # exit from second parent, print eventual PID before
-            print "\nDaemon PID %d" % pid
+            if os.path.isfile(pidfile):
+                print "\npywapi-dbus already running!
+                sys.exit(1)
+            else:
+            	f = open(pidfile, 'w')
+                f.write(str(pid))
+            print "\nService PID %d" % pid
             sys.exit(0) 
     except OSError, e: 
         print >>sys.stderr, "fork #2 failed: %d (%s)" % (e.errno, e.strerror) 
         sys.exit(1) 
-
+	
     main() 
