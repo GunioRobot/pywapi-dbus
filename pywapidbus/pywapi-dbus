@@ -20,7 +20,7 @@
 
 import sys, os 
 
-pidfile = os.path.join(os.environ['HOME'] + '/.pywapi-dbus', 'pywapi-dbus.pid')
+pidfile = os.path.join(os.environ['HOME'] + '.pywapi-dbus', 'pywapi-dbus.pid')
 print "\n" + pidfile
 dir = os.path.dirname(pidfile)
 if not os.path.exists(dir):
