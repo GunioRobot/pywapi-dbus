@@ -13,12 +13,27 @@ D-Bus Python Weather API Service can be used
 in all programming languages that has working D-Bus
 libraries available.
 
+######################################################
+
 D-Bus Python Weather API Service depends on:
 Python ( 3.0> version >2.5 )
+Python Qt D-Bus library (python-qt-dbus)
 D-Bus Python bindings
 Python XML module
 Python Urllib
 Slightly modified Python Weather API (included!)
+
+Although pywapi-dbus needs Python Qt D-Bus library,
+it doesn't need all Qt libraries. Distributions
+usually have a specific package for it (in Ubuntu
+and variants, it's python-qt-dbus).
+
+Feel free to port
+this to GLib, but unfortinately it seems that if this
+is implemented with GLib D-Bus Mainloop, the memory
+consumption is about 30-40% larger than
+
+######################################################
 
 D-Bus Python Weather API Service is licensed
 under GNU Lesser General Public License version 3.
@@ -28,11 +43,13 @@ Python Weather API is licensed under MIT License.
 Read the commented section at the beginning of
 "pywapidbus/pywapi.py"
 
+Thanks to Eugene Kaznacheev for writing
+the original pywapi library!
+
+######################################################
+
 Method documentation and error codes can be
 found from file "Method Reference"
-
-Thanks to Eugene Kaznacheev for writing
-the pywapi library!
 
 ##################### INSTALLING #####################
 
