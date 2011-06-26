@@ -18,44 +18,34 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pywapi-dbus.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os 
+import sys, os
+from pywapidbus.daemon import Daemon
 
 pidfile = os.path.join(os.environ['HOME'], '.pywapi-dbus', 'pywapi-dbus.pid')
-print "\n" + pidfile
 path = os.path.dirname(pidfile)
 if not os.path.exists(path):
     os.makedirs(path)
-    
-def main():
-    import pywapidbus.main
 
+pidfileString = str(pidfile)
+
+ 
+class MyDaemon(Daemon):
+        def run(self):
+                import pywapidbus.main
+ 
 if __name__ == "__main__":
-    try: 
-        pid = os.fork() 
-        if pid > 0:
-            # exit first parent
-            sys.exit(0) 
-    except OSError, e: 
-        print >>sys.stderr, "fork #1 failed: %d (%s)" % (e.errno, e.strerror) 
-        sys.exit(1)
-
-    os.chdir(os.environ['HOME']) 
-    os.setsid() 
-    os.umask(0) 
-
-    try: 
-        pid = os.fork() 
-        if pid > 0:
-            if os.path.isfile(pidfile):
-                print "\npywapi-dbus already running!"
-                sys.exit(1)
-            else:
-            	f = open(pidfile, 'w')
-                f.write(str(pid))
-            print "\nService PID %d" % pid
-            sys.exit(0) 
-    except OSError, e: 
-        print >>sys.stderr, "fork #2 failed: %d (%s)" % (e.errno, e.strerror) 
-        sys.exit(1) 
-	
-    main() 
+        daemon = MyDaemon(pidfileString)
+        if len(sys.argv) == 2:
+                if 'start' == sys.argv[1]:
+                        daemon.start()
+                elif 'stop' == sys.argv[1]:
+                        daemon.stop()
+                elif 'restart' == sys.argv[1]:
+                        daemon.restart()
+                else:
+                        print "Unknown command"
+                        sys.exit(2)
+                sys.exit(0)
+        else:
+                print "usage: %s start|stop|restart" % sys.argv[0]
+                sys.exit(2)

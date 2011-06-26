@@ -24,11 +24,12 @@ is to provide same functionality as Python Weather API (pywapi) but
 as an daemon that provides information through dbus so that many apps can use it.
 Useful or not? Who knows. (: """
 
+from PyQt4.QtCore import QCoreApplication
 
 # Import dbus service and mainloop-glib. Needed to run a dbus service.
 try:
     import dbus.service
-    from dbus.mainloop.glib import DBusGMainLoop
+    from dbus.mainloop.qt import DBusQtMainLoop
 except:
     print ("You don't seem to have required dbus Python libraries.")
     exit(1)
@@ -48,14 +49,15 @@ errInvalidLocation = int(102)
 errUnknownUnit = int(103)
 errIncorrectDayID = int(104)
 
-class Main(dbus.service.Object):
+
+class GoogleAPI(dbus.service.Object):
     # Initializing our dbus service 
     def __init__(self):
         busName = dbus.service.BusName('org.pywapi.Weather', bus = dbus.SessionBus())
         dbus.service.Object.__init__(self, busName, '/GoogleAPI')
         self.clients = {} # We use sender parameter in order to let multiple apps use this service at same time
  
-    # GOOGLE PART STARTS HERE !!! (functions prefixed with g)
+    # GOOGLE PART STARTS HERE !!!
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
     # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
     @dbus.service.method('org.pywapi.Weather', in_signature = 'ss', sender_keyword = 'sender')
@@ -69,7 +71,6 @@ class Main(dbus.service.Object):
         except:
             del self.clients[sender] # Delete reference to incorrect location :)
             return errInvalidLocation
-        print sender
         return errSuccess
     
     # Replies with a current city name and area (state, province or something like that)
@@ -241,8 +242,31 @@ class Main(dbus.service.Object):
     def cityList(self, country):
         googleCities = pywapi.get_cities_from_google(country)
         return googleCities
-          
-DBusGMainLoop(set_as_default = True)
-app=Main()
-from gtk import main
-main()
+    
+class YahooAPI(dbus.service.Object):
+    # Initializing our dbus service 
+    def __init__(self):
+        busName = dbus.service.BusName('org.pywapi.Weather', bus = dbus.SessionBus())
+        dbus.service.Object.__init__(self, busName, '/YahooAPI')
+        self.clients = {} # We use sender parameter in order to let multiple apps use this service at same time
+ 
+    # YAHOO PART STARTS HERE !!! (functions prefixed with g)
+    # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
+    # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
+    @dbus.service.method('org.pywapi.Weather', in_signature = 'ss', sender_keyword = 'sender')
+    def setLocation(self, location, units, sender=None):
+        try:
+            self.clients[sender] = pywapi.get_weather_from_yahoo(location, units)
+        except:
+            return errPywapiError
+        try: # Checks if the location is valid. Just checking if city exists, could be something else, no specific reason.
+            self.clients[sender]['forecast_information']['city']
+        except:
+            del self.clients[sender] # Delete reference to incorrect location :)
+            return errInvalidLocation
+        return errSuccess
+class Main():
+    DBusQtMainLoop(set_as_default = True)
+    app = QCoreApplication([])
+    g=GoogleAPI();y=YahooAPI();
+    app.exec_()
