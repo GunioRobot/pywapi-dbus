@@ -28,10 +28,10 @@ it doesn't need all Qt libraries. Distributions
 usually have a specific package for it (in Ubuntu
 and variants, it's python-qt-dbus).
 
-Feel free to port
-this to GLib, but unfortinately it seems that if this
-is implemented with GLib D-Bus Mainloop, the memory
-consumption is about 30-40% larger than
+Feel free to port this to GLib, but unfortinately
+it seems that if this is implemented with GLib
+D-Bus Mainloop, the memory consumption is about
+30-40% larger than with Qt D-Bus Mainloop.
 
 ######################################################
 

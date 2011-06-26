@@ -107,6 +107,3 @@ class Daemon:
 	def restart(self):
 		self.stop()
 		self.start()
-
-	def run(self):
-		
