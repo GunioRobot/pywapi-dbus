@@ -27,9 +27,10 @@
 Fetches weather reports from Google Weather, Yahoo Wheather and NOAA
 """
 
-import sys
-import urllib2, re
-from xml.dom import minidom
+from sys import exit
+import re
+from urllib2 import urlopen, URLError
+from xml.dom.minidom import parseString, parse
 from urllib import quote
 
 GOOGLE_WEATHER_URL   = 'http://www.google.com/ig/api?weather=%s&hl=%s'
@@ -55,7 +56,7 @@ def get_weather_from_google(location_id, hl = ''):
     """
     location_id, hl = map(quote, (location_id, hl))
     url = GOOGLE_WEATHER_URL % (location_id, hl)
-    handler = urllib2.urlopen(url)
+    handler = urlopen(url)
     content_type = handler.info().dict['content-type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
@@ -65,7 +66,7 @@ def get_weather_from_google(location_id, hl = ''):
     else:
         xml_response = handler.read()
     handler.close()
-    dom = minidom.parseString(xml_response)
+    dom = parseString(xml_response)
 
     weather_data = {}
     weather_dom = dom.getElementsByTagName('weather')[0]
@@ -109,7 +110,7 @@ def get_countries_from_google(hl = ''):
     """
     url = GOOGLE_COUNTRIES_URL % hl
     
-    handler = urllib2.urlopen(url)
+    handler = urlopen(url)
     content_type = handler.info().dict['content-type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
@@ -118,7 +119,7 @@ def get_countries_from_google(hl = ''):
         xml_response = handler.read().decode(charset).encode('utf-8')
     else:
         xml_response = handler.read()
-    dom = minidom.parseString(xml_response)
+    dom = parseString(xml_response)
     handler.close()
 
     countries = []
@@ -146,9 +147,9 @@ def get_cities_from_google(country_code, hl = ''):
     url = GOOGLE_CITIES_URL % (country_code.lower(), hl)
     
     try:
-        handler = urllib2.urlopen(url)
-    except urllib2.URLError:
-        sys.exit(1)
+        handler = urlopen(url)
+    except URLError:
+        exit(1)
     content_type = handler.info().dict['content-type']
     charset = re.search('charset\=(.*)',content_type).group(1)
     if not charset:
@@ -157,7 +158,7 @@ def get_cities_from_google(country_code, hl = ''):
         xml_response = handler.read().decode(charset).encode('utf-8')
     else:
         xml_response = handler.read()
-    dom = minidom.parseString(xml_response)
+    dom = parseString(xml_response)
     handler.close()
 
     cities = []
@@ -206,8 +207,8 @@ def get_weather_from_yahoo(location_id, units = 'metric'):
     else:
         unit = 'f'
     url = YAHOO_WEATHER_URL % (location_id, unit)
-    handler = urllib2.urlopen(url)
-    dom = minidom.parse(handler)    
+    handler = urlopen(url)
+    dom = parse(handler)    
     handler.close()
         
     weather_data = {}
@@ -285,8 +286,8 @@ def get_weather_from_noaa(station_id):
     """
     station_id = quote(station_id)
     url = NOAA_WEATHER_URL % (station_id)
-    handler = urllib2.urlopen(url)
-    dom = minidom.parse(handler)    
+    handler = urlopen(url)
+    dom = parse(handler)    
     handler.close()
         
     data_structure = ('suggested_pickup',
