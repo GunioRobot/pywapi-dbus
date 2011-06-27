@@ -21,7 +21,7 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1a1")
+__version__=("0.1a2")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 from PyQt4.QtCore import QCoreApplication
@@ -64,6 +64,10 @@ class GoogleAPI(dbus.service.Object):
             self.clients[sender]
         except KeyError:
             return errUnregisteredSender
+        
+    def checkDay(self, day):
+        if day < 3:
+            return errIncorrectDayID
         
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
     # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
@@ -174,6 +178,8 @@ class GoogleAPI(dbus.service.Object):
     def forecastDayOfWeek(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['day_of_week']
     
     # Replies with a condition in forecast (not current condition!).
@@ -181,6 +187,8 @@ class GoogleAPI(dbus.service.Object):
     def forecastCondition(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['condition']
     
     # Replies with a max (highest) temperature. Uses default unit set by locale!
@@ -188,6 +196,8 @@ class GoogleAPI(dbus.service.Object):
     def forecastTMax(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['high']
     
     # Replies with a min (lowest) temperature. Uses default unit set by locale!
@@ -195,6 +205,8 @@ class GoogleAPI(dbus.service.Object):
     def forecastTMin(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['high']
     
     # Replies with a forecast condition icon (from Google)
@@ -202,6 +214,8 @@ class GoogleAPI(dbus.service.Object):
     def forecastIcon(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['icon']
  
 
@@ -227,6 +241,10 @@ class YahooAPI(dbus.service.Object):
             self.clients[sender]
         except KeyError:
             return errUnregisteredSender
+        
+    def checkDay(self, day):
+        if day > 1:
+            return errIncorrectDayID
  
     @dbus.service.method('org.pywapi.Daemon', in_signature = 'ss', sender_keyword = 'sender')
     def setLocation(self, location_id, units, sender=None):
@@ -263,31 +281,31 @@ class YahooAPI(dbus.service.Object):
         return self.clients[sender]['html_description']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def city(self, sender=None):
+    def locationCity(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['location']['city']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def region(self, sender=None):
+    def locationRegion(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['location']['region']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def country(self, sender=None):
+    def locationCountry(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['location']['country']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def latitude(self, sender=None):
+    def geoLatitude(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['geo']['lat']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def longnitude(self, sender=None):
+    def geoLongnitude(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['geo']['long']
@@ -315,6 +333,88 @@ class YahooAPI(dbus.service.Object):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['units']['temperature']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def astronomySunrise(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['astronomy']['sunrise']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def astronomySunset(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['astronomy']['sunset']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def conditionCode(self, sender=None): # Dont ask what is this because I have no idea
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['condition']['code']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def conditionDate(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['condition']['date']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def conditionTemperature(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['condition']['temp']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def conditionText(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['condition']['text']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def conditionTitle(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['condition']['title']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    def forecastCode(self, day, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
+        return self.clients[sender]['forecasts'][day]['code']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    def forecastDate(self, day, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
+        return self.clients[sender]['forecasts'][day]['date']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    def forecastTMax(self, day, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
+        return self.clients[sender]['forecasts'][day]['high']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    def forecastTMix(self, day, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
+        return self.clients[sender]['forecasts'][day]['low']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    def forecastText(self, day, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if self.checkDay(day) == 104:
+            return errIncorrectDayID
+        return self.clients[sender]['forecasts'][day]['text']
     
 class Application(dbus.service.Object): # Some methods about ourselves
     def __init__(self):
