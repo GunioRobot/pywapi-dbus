@@ -21,15 +21,14 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1a2")
+__version__=("0.1 Beta 1")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
-from PyQt4.QtCore import QCoreApplication
-
-# Import dbus service and mainloop-glib. Needed to run a dbus service.
+# Import dbus service and mainloop-glib. Needed to run a dbus service. 
 try:
     import dbus.service
-    from dbus.mainloop.qt import DBusQtMainLoop
+    from dbus.mainloop.glib import DBusGMainLoop
+    from gobject import MainLoop
 except:
     print ("You don't seem to have required dbus Python libraries.")
     exit(1)
@@ -441,7 +440,7 @@ class Application(dbus.service.Object): # Some methods about ourselves
     
 class Main():
     # Run the loop and classes
-    DBusQtMainLoop(set_as_default = True)
-    app = QCoreApplication([])
+    DBusGMainLoop(set_as_default = True)
     g=GoogleAPI();y=YahooAPI();a=Application()
-    app.exec_()
+    mainloop = MainLoop()
+    mainloop.run()
