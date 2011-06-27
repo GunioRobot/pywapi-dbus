@@ -47,8 +47,8 @@ found from file "Method Reference"
 ##################### INSTALLING #####################
 
 Install required dependencies for your system first.
-In Ubuntu and variants it should be fine if you
-install package "python-qt4-dbus" from repositories.
+In Ubuntu and variants should include everything as
+default.
 
 In order to install pywapi-dbus, run:
 python setup.py install
@@ -57,7 +57,8 @@ has this README file).
 
 The setup will byte-compile the pywapi-dbus and copy
 it's files to right system directories for your system.
-It will also install pywapi as Python module so it
-can be used by other Python applications too.
+The setup doesn't install pywapi as Python module
+because pywapi-dbus ships a modified version of it
+which is incompatible with original pywapi.
 
 ######################################################
