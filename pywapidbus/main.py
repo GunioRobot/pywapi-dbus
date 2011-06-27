@@ -18,11 +18,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pywapi-dbus.  If not, see <http://www.gnu.org/licenses/>.
 
-""" This is application provides a dbus service that lets other
-applications receive weather information through dbus.The main goal
-is to provide same functionality as Python Weather API (pywapi) but
-as an daemon that provides information through dbus so that many apps can use it.
-Useful or not? Who knows. (: """
+# About information
+__author__=("Sasu Karttunen")
+__email__=("sasu.karttunen@tpnet.fi")
+__version__=("0.1a1")
+__website__=("https://github.com/skfin/pywapi-dbus")
 
 from PyQt4.QtCore import QCoreApplication
 
@@ -82,6 +82,14 @@ class GoogleAPI(dbus.service.Object):
             if new_owner == '': # Sender disconnected from D-Bus, clearing information
                 del self.clients[sender]
         self.bus.watch_name_owner(sender, clearDict)
+        return errSuccess
+    
+    # Let the client be nice to us and say that it's done it's busines and don't need us anymore :)
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def clear(self, sender):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        del self.clients[sender]
         return errSuccess
     
     # Replies with a current city name and area (state, province or something like that)
@@ -231,7 +239,9 @@ class YahooAPI(dbus.service.Object):
         def clearDict(new_owner):
             if new_owner == '': # Sender disconnected from D-Bus, clearing information
                 del self.clients[sender]
-        self.bus.watch_name_owner(sender, clearDict)
+                watch.cancel() # Do not watch the client anymore since it has disconnected
+        # Watches the unique bus name and calls clearDict() when it's owner changes (most likely client disconnects from session bus)
+        watch =  self.bus.watch_name_owner(sender, clearDict)
         return errSuccess   
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
@@ -306,15 +316,32 @@ class YahooAPI(dbus.service.Object):
             return errUnregisteredSender
         return self.clients[sender]['units']['temperature']
     
+class Application(dbus.service.Object): # Some methods about ourselves
+    def __init__(self):
+        busName = dbus.service.BusName('org.pywapi.Daemon', bus = dbus.SessionBus())
+        dbus.service.Object.__init__(self, busName, '/App')
+        self.clients = {}
+        self.bus = dbus.SessionBus()
+        
     @dbus.service.method('org.pywapi.Daemon')
-    def doMemoryDump(self):
-        from meliae import scanner
-        scanner.dump_all_objects("/home/skfin/Development/meliae.dump")
+    def version(self):
+        return __version__
     
+    @dbus.service.method('org.pywapi.Daemon')
+    def author(self):
+        return __author__
     
+    @dbus.service.method('org.pywapi.Daemon')
+    def email(self):
+        return __email__
+    
+    @dbus.service.method('org.pywapi.Daemon')
+    def website(self):
+        return __website__
     
 class Main():
+    # Run the loop and classes
     DBusQtMainLoop(set_as_default = True)
     app = QCoreApplication([])
-    g=GoogleAPI();y=YahooAPI();
+    g=GoogleAPI();y=YahooAPI();a=Application()
     app.exec_()
