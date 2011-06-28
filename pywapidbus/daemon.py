@@ -13,7 +13,7 @@ class Daemon:
 		self.stderr = stderr
 		self.pidfile = pidfile
 	
-	def daemonize(self):
+	def daemonize(self, DEBUG):
 		"""
 		do the UNIX double-fork magic, see Stevens' "Advanced 
 		Programming in the UNIX Environment" for details (ISBN 0201563177)
@@ -44,14 +44,15 @@ class Daemon:
 			exit(1) 
 	
 		# redirect standard file descriptors
-		stdout.flush()
-		stderr.flush()
-		si = file(self.stdin, 'r')
-		so = file(self.stdout, 'a+')
-		se = file(self.stderr, 'a+', 0)
-		dup2(si.fileno(), stdin.fileno())
-		dup2(so.fileno(), stdout.fileno())
-		dup2(se.fileno(), stderr.fileno())
+		if DEBUG == False:
+			stdout.flush()
+			stderr.flush()
+			si = file(self.stdin, 'r')
+			so = file(self.stdout, 'a+')
+			se = file(self.stderr, 'a+', 0)
+			dup2(si.fileno(), stdin.fileno())
+			dup2(so.fileno(), stdout.fileno())
+			dup2(se.fileno(), stderr.fileno())
 	
 		# write pidfile
 		register(self.delpid)
@@ -61,7 +62,7 @@ class Daemon:
 	def delpid(self):
 		remove(self.pidfile)
 
-	def start(self):
+	def start(self, DEBUG):
 		# Check for a pidfile to see if the daemon already runs
 		try:
 			pf = file(self.pidfile,'r')
@@ -76,7 +77,7 @@ class Daemon:
 			exit(1)
 		
 		# Start the daemon
-		self.daemonize()
+		self.daemonize(DEBUG)
 		self.run()
 
 	def stop(self):
@@ -107,6 +108,6 @@ class Daemon:
 				print str(err)
 				exit(1)
 
-	def restart(self):
+	def restart(self, DEBUG):
 		self.stop()
-		self.start()
+		self.start(DEBUG)

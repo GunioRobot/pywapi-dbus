@@ -88,7 +88,6 @@ class GoogleAPI(dbus.service.Object):
         return errSuccess
     
     # Let the client be nice to us and say that it's done it's busines and don't need us anymore :)
-    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
     def clear(self, sender):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
@@ -261,6 +260,12 @@ class YahooAPI(dbus.service.Object):
         watch =  self.bus.watch_name_owner(sender, clearDict)
         return errSuccess   
     
+    def clear(self, sender):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        del self.clients[sender]
+        return errSuccess
+    
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
     def title(self, sender=None):
         if self.checkIndex(sender) == 100:
@@ -414,13 +419,41 @@ class YahooAPI(dbus.service.Object):
         if self.checkDay(day) == 104:
             return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['text']
+
+class NoaaAPI(dbus.service.Object):
+    def __init__(self):
+        busName = dbus.service.BusName('org.pywapi.Daemon', bus = dbus.SessionBus())
+        dbus.service.Object.__init__(self, busName, '/NoaaAPI')
+        self.clients = {}
+        self.bus = dbus.SessionBus()
+              
+    def checkIndex(self, sender):
+        try:
+            self.clients[sender]
+        except KeyError:
+            return errUnregisteredSender
+        
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def setLocation(self, location_id, sender=None):
+        try:
+            self.clients[sender] = pywapidbus.pywapi.get_weather_from_noaa(location_id) # This fails on incorrect location so we dont need to delete the key :P
+        def clearDict(new_owner):
+            if new_owner == '':
+                del self.clients[sender]
+        self.bus.watch_name_owner(sender, clearDict)
+        return errSuccess
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def clear(self, sender):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        del self.clients[sender]
+        return errSuccess
     
 class Application(dbus.service.Object): # Some methods about ourselves
     def __init__(self):
         busName = dbus.service.BusName('org.pywapi.Daemon', bus = dbus.SessionBus())
         dbus.service.Object.__init__(self, busName, '/App')
-        self.clients = {}
-        self.bus = dbus.SessionBus()
         
     @dbus.service.method('org.pywapi.Daemon')
     def version(self):
@@ -441,6 +474,6 @@ class Application(dbus.service.Object): # Some methods about ourselves
 class Main():
     # Run the loop and classes
     DBusGMainLoop(set_as_default = True)
-    g=GoogleAPI();y=YahooAPI();a=Application()
+    g=GoogleAPI();y=YahooAPI();n=NoaaAPI();a=Application()
     mainloop = MainLoop()
     mainloop.run()

@@ -29,6 +29,7 @@ if not path.exists(directoryname):
 
 pidfileString = str(pidfile)
 
+DEBUG = False
  
 class MyDaemon(Daemon):
         def run(self):
@@ -38,15 +39,25 @@ if __name__ == "__main__":
         daemon = MyDaemon(pidfileString)
         if len(argv) == 2:
                 if 'start' == argv[1]:
-                        daemon.start()
+                        daemon.start(DEBUG)
                 elif 'stop' == argv[1]:
                         daemon.stop()
                 elif 'restart' == argv[1]:
-                        daemon.restart()
+                        daemon.restart(DEBUG)
                 else:
-                        print "Unknown command"
+                        print "Invalid arguments"
                         exit(2)
                 exit(0)
+        elif len(argv) == 3:
+        		if 'start' == argv[1] and '--debug' in argv[2]:
+        				DEBUG = True
+        				daemon.start(DEBUG)
+        		elif 'restart' == argv[1] and '--debug' in argv[2]:
+        				DEBUG = True
+        				daemon.restart(DEBUG)
+        		else:
+        				print "Invalid arguments"
+        				exit(2)
         else:
-                print "usage: %s start|stop|restart" % argv[0]
+                print "usage: %s start|stop|restart (--debug)" % argv[0]
                 exit(2)
