@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from sys import exit, stderr, stdout, stdin
-from os import chdir, dup2, fork, getpid, kill, path, remove, setsid, umask
+from os import chdir, dup2, fork, getpid, kill, killpg, path, remove, setsid, umask
 from time import sleep
-from atexit import register
-from signal import SIGTERM 
+import atexit
+from signal import SIGTERM, signal
 
 class Daemon:
 	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
@@ -12,6 +12,13 @@ class Daemon:
 		self.stdout = stdout
 		self.stderr = stderr
 		self.pidfile = pidfile
+		
+	def sigterm_handler(self, signum):
+		global SIGTERM_SENT
+		if not SIGTERM_SENT:
+			SIGTERM_SENT = True
+			killpg(0, SIGTERM)
+		exit()
 	
 	def daemonize(self, DEBUG):
 		"""
@@ -57,7 +64,8 @@ class Daemon:
 			print "\nRunning the service in debug mode."
 	
 		# write pidfile
-		register(self.delpid)
+		atexit.register(self.delpid)
+		signal(SIGTERM, self.sigterm_handler)
 		pid = str(getpid())
 		file(self.pidfile,'w+').write("%s\n" % pid)
 	
