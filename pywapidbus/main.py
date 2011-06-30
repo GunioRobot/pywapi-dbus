@@ -21,7 +21,7 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1 Beta 1")
+__version__=("0.1 Beta 2")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 # Import dbus service and mainloop-glib. Needed to run a dbus service. 
@@ -309,7 +309,7 @@ class YahooAPI(dbus.service.Object):
         return self.clients[sender]['geo']['lat']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def geoLongnitude(self, sender=None):
+    def geoLongitude(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['geo']['long']
@@ -437,6 +437,8 @@ class NoaaAPI(dbus.service.Object):
     def setLocation(self, location_id, sender=None):
         try:
             self.clients[sender] = pywapidbus.pywapi.get_weather_from_noaa(location_id) # This fails on incorrect location so we dont need to delete the key :P
+        except:
+            return errInvalidLocation
         def clearDict(new_owner):
             if new_owner == '':
                 del self.clients[sender]
@@ -444,11 +446,204 @@ class NoaaAPI(dbus.service.Object):
         return errSuccess
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def clear(self, sender):
+    def clear(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         del self.clients[sender]
         return errSuccess
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def dewpoint(self, units, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if units == 'metric':
+            return self.clients[sender]['dewpoint_c']
+        elif units == 'imperial':
+            return self.clients[sender]['dewpoint_f']
+        else:
+            return errUnknownUnit
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def dewpointString(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['dewpoint_string']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def heatIndex(self, units, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if units == 'metric':
+            return self.clients[sender]['heat_index_c']
+        elif units == 'imperial':
+            return self.clients[sender]['heat_index_f']
+        else:
+            return errUnknownUnit
+        
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def heatIndexString(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['heat_index_string']
+        
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def iconUrl(self, sender=None): #Nah, lets just append these, I'm getting lazy
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['icon_url_base'] + self.clients[sender]['icon_url_name']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def latitude(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['latitude']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def longitude(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['longitude']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def location(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['location']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def observationURL(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['ob_url']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def observationTime(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['observation_time']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def observationTimeRFC822(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['observation_time_rfc822']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def pressure(self, unit, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if unit == 'mbar':
+            return self.clients[sender]['pressure_mb']
+        elif unit == 'inhg':
+            return self.clients[sender]['pressure_in'] # Who the hell uses inch of mercury as air pressure unit?!?
+        else:
+            return errUnknownUnit
+        
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def pressureString(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['pressure_string']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def relativeHumidity(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['relative_humidity']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def stationID(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['station_id']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def suggestedPickup(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['suggested_pickup']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def suggestedPickupPeriod(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['suggested_pickup_period']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def temperature(self, units, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if units == 'metric':
+            return self.clients[sender]['temp_c']
+        elif units == 'imperial':
+            return self.clients[sender]['temp_f']
+        else:
+            return errUnknownUnit
+        
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def temperatureString(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['temperature_string']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def twoDayHistoryURL(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['two_day_history_url']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def condition(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['weather']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windDegrees(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind_degrees']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windDir(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind_dir']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windGustMPH(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind_gust_mph']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windMPH(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind_mph']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windString(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind_string']
+    
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def windchill(self, units, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        if units == 'metric':
+            return self.clients[sender]['windchill_c']
+        elif units == 'imperial':
+            return self.clients[sender]['windchill_f']
+        else:
+            return errUnknownUnit
+        
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 's', sender_keyword = 'sender')
+    def windchillString(self, units, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['windchill_string']
     
 class Application(dbus.service.Object): # Some methods about ourselves
     def __init__(self):
@@ -471,9 +666,14 @@ class Application(dbus.service.Object): # Some methods about ourselves
     def website(self):
         return __website__
     
+    @dbus.service.signal('org.pywapi.Daemon')
+    def ready(self): # Send a signal that service is ready to receive calls
+        pass
+    
 class Main():
     # Run the loop and classes
     DBusGMainLoop(set_as_default = True)
     g=GoogleAPI();y=YahooAPI();n=NoaaAPI();a=Application()
+    a.ready()
     mainloop = MainLoop()
     mainloop.run()

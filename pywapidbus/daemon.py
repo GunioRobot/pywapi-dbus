@@ -53,6 +53,8 @@ class Daemon:
 			dup2(si.fileno(), stdin.fileno())
 			dup2(so.fileno(), stdout.fileno())
 			dup2(se.fileno(), stderr.fileno())
+		else:
+			print "\nRunning the service in debug mode."
 	
 		# write pidfile
 		register(self.delpid)
