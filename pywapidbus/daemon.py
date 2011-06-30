@@ -3,7 +3,7 @@
 from sys import exit, stderr, stdout, stdin
 from os import chdir, dup2, fork, getpid, kill, killpg, path, remove, setsid, umask
 from time import sleep
-import atexit
+from atexit import register
 from signal import SIGTERM, signal
 
 class Daemon:
@@ -64,7 +64,7 @@ class Daemon:
 			print "\nRunning the service in debug mode."
 	
 		# write pidfile
-		atexit.register(self.delpid)
+		register(self.delpid)
 		signal(SIGTERM, self.sigterm_handler)
 		pid = str(getpid())
 		file(self.pidfile,'w+').write("%s\n" % pid)
