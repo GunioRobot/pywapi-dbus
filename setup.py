@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name = "pywapi-dbus",
-    version = "0.1-git",
+    version = "0.1.1",
     description = "D-Bus Python Weather API Service is a D-Bus service providing weather information",
     author = "Sasu Karttunen",
     author_email = "sasu.karttunen@tpnet.fi",

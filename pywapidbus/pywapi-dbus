@@ -21,7 +21,7 @@
 # About information, REMEMBER TO CHANGE IN main.py TOO! Should invent a better system here.
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1-git")
+__version__=("0.1.1")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 __help__=("""Usage: %s start|stop|restart

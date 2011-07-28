@@ -21,7 +21,7 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1-git")
+__version__=("0.1.1")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 # Import dbus service and mainloop-glib. Needed to run a dbus service. 
@@ -71,9 +71,9 @@ class GoogleAPI(dbus.service.Object):
     # Set current location and retrieve the weather information. Replies with integer 0 for success, 1 for failure.
     # It's faster to retrieve weather now rather than every time temperature, condition or etc. is requested.
     @dbus.service.method('org.pywapi.Daemon', in_signature = 'ss', sender_keyword = 'sender')
-    def setLocation(self, location, locale, sender=None):
+    def setLocation(self, location, country_code, sender=None):
         try:
-            self.clients[sender] = pywapidbus.pywapi.get_weather_from_google(location, locale)
+            self.clients[sender] = pywapidbus.pywapi.get_weather_from_google(location, country_code)
         except:
             return errPywapiError
         try: # Checks if the location is valid. Just checking if city exists, could be something else, no specific reason.
