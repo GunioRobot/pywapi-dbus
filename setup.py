@@ -11,7 +11,7 @@ setup(name = "pywapi-dbus",
     data_files=[('share/dbus-1/services', ['pywapidbus/org.pywapi.Daemon.service'])],
     long_description = """D-Bus Python Weather API Service is intended to provide weather information through D-Bus. It's main goal is to provide same functionality as Python Weather API provides as Python library. D-Bus Python Weather API Service can be used in all programming languages that has working D-Bus libraries available.""", 
     classifiers=[
-      'Development Status :: 4 - ',
+      'Development Status :: 4 - Beta',
       'Intended Audience :: Developers',
       'Intended Audience :: System Administrators',
       'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
