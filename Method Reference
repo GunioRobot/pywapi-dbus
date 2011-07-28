@@ -1,11 +1,13 @@
 ################# METHOD REFERENCE ###################
-org.pywapi.Weather
-	org.pywapi.Weather /
-	org.pywapi.Weather /GoogleAPI	-Google Weather API Methods
+org.pywapi.Daemon
+	org.pywapi.Daemon /
+	org.pywapi.Daemon /GoogleAPI	-Google Weather API Methods
 		method void org.pywapi.Weather.city()
 			Replies with city name and a code of state/province (if any) of location.
 		method void org.pywapi.Weather.cityList(QString country)
-			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.
+			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.	
+		method void org.pywapi.Daemon.clear()
+		    Clears the session with sender client. Intended to be used when client application quits or doesnt need pywapi-dbus anymore. YOU SHOULD DO THIS!
 		method void org.pywapi.Weather.countrylist()
 			Replies with a list of countries.
 		method void org.pywapi.Weather.currentCondition()
@@ -40,8 +42,100 @@ org.pywapi.Weather
 			Parameter locale should be ISO 3166-1 alpha-2 country code. It sets the language of replies and units in forecasts.
 		method void org.pywapi.Weather.unitSystem()
 			Replies with the current unit system used. Either "SI" for metric or "US" for imperial.
-		method QString org.freedesktop.DBus.Introspectable.Introspect()
-			Replies with a methods listed in XML-document
+	
+	org.pywapi.Daemon /YahooAPI
+		method void org.pywapi.Daemon.astronomySunrise()
+			Replies with a sunrise time.
+		method void org.pywapi.Daemon.astronomySunset()
+			Replies with a sunset time.
+		method void org.pywapi.Daemon.atmosphereHumidity()
+			Replies with current humidity
+		method void org.pywapi.Daemon.atmospherePressure()
+			Replies with current air pressure
+		method void org.pywapi.Daemon.atmosphereRising()
+			Replies with current state of the barometric pressure: steady (0), rising (1), or falling (2).
+		method void org.pywapi.Daemon.atmosphereVisibility()
+		method int org.pywapi.Daemon.conditionCode()
+			Replies with a condition code , see http://developer.yahoo.com/weather/#codes
+		method void org.pywapi.Daemon.conditionDate()
+		    Replies with a date for current conditions
+		method void org.pywapi.Daemon.conditionTemperature()
+			Replies with a temperature in current condition.
+		method void org.pywapi.Daemon.conditionText()
+			Replies with a condition in text format. Use codes instead.
+		method void org.pywapi.Daemon.conditionTitle()
+		    Replies with a long title of conditions, for example: "Conditions for New York, NY at 9:51 am EDT"
+		method int org.pywapi.Daemon.forecastCode(int day)
+		    Replies with a condition code in forecast for day. (day should be either 0 or 1. 0 is today, 1 is tomorrow.)
+		method void org.pywapi.Daemon.forecastDate(int day)
+		    Replies with a forecast date for day.
+		method void org.pywapi.Daemon.forecastTMax(int day)
+		    Replies with a maximum temperature in forecast for day.
+		method void org.pywapi.Daemon.forecastTMin(int day)
+		    Replies with a minimum temperature in forecast for day.
+		method void org.pywapi.Daemon.forecastText(int day)
+		    Replies with a text formatted condition in forecast for day.
+		method void org.pywapi.Daemon.geoLatitude()
+		    Replies with a latitude of current location.
+		method void org.pywapi.Daemon.geoLongitude()
+		    Replies with a longitude of current location.
+		method void org.pywapi.Daemon.link()
+		    Replies with a link to weather information of the location in Yahoo Weather service.
+		method void org.pywapi.Daemon.locationCity()
+		    Replies with a city name of current location
+		method void org.pywapi.Daemon.locationCountry()
+		    Replies with a country of current location
+		method void org.pywapi.Daemon.locationRegion()
+		    Replies with a region of current location (for example state if location is in US)
+		method void org.pywapi.Daemon.setLocation(QString location_id, QString units)
+			Sets the location and unit system used. Location ID is a five digit US zip code or Yahoo Weather location ID.
+			Units can be either 'metric' or 'imperial'.
+		method void org.pywapi.Daemon.unitsDistance()
+			Replies with distance unit used (km or mi)
+		method void org.pywapi.Daemon.unitsPressure()
+			Replies with pressure unit used (mb or in)
+		method void org.pywapi.Daemon.unitsSpeed()
+			Replies with (wind)speed unit used.
+		method void org.pywapi.Daemon.unitsTemperature()
+			Replies with temperature unit used.
+		method void org.pywapi.Daemon.windChill()
+			Replies with current wind chill in degrees
+		method void org.pywapi.Daemon.windDirection()
+			Replies with current wind direction
+		method void org.pywapi.Daemon.windSpeed()
+			Replies with current wind speed.
+	
+	org.pywapi.Daemon /NoaaAPI	
+		method void org.pywapi.Daemon.clear()
+		method void org.pywapi.Daemon.condition()
+		method void org.pywapi.Daemon.dewpoint(QString units)
+		method void org.pywapi.Daemon.dewpointString()
+		method void org.pywapi.Daemon.heatIndex(QString units)
+		method void org.pywapi.Daemon.heatIndexString()
+		method void org.pywapi.Daemon.iconUrl()
+		method void org.pywapi.Daemon.latitude()
+		method void org.pywapi.Daemon.location()
+		method void org.pywapi.Daemon.longitude()
+		method void org.pywapi.Daemon.observationTime()
+		method void org.pywapi.Daemon.observationTimeRFC822()
+		method void org.pywapi.Daemon.observationURL()
+		method void org.pywapi.Daemon.pressure(QString unit)
+		method void org.pywapi.Daemon.pressureString()
+		method void org.pywapi.Daemon.relativeHumidity()
+		method void org.pywapi.Daemon.setLocation(QString location_id)
+		method void org.pywapi.Daemon.stationID()
+		method void org.pywapi.Daemon.suggestedPickup()
+		method void org.pywapi.Daemon.suggestedPickupPeriod()
+		method void org.pywapi.Daemon.temperature(QString units)
+		method void org.pywapi.Daemon.temperatureString()
+		method void org.pywapi.Daemon.twoDayHistoryURL()
+		method void org.pywapi.Daemon.windDegrees()
+		method void org.pywapi.Daemon.windDir()
+		method void org.pywapi.Daemon.windGustMPH()
+		method void org.pywapi.Daemon.windMPH()
+		method void org.pywapi.Daemon.windString()
+		method void org.pywapi.Daemon.windchill(QString units)
+		method void org.pywapi.Daemon.windchillString(QString units)
 
 #################### ERROR CODES #####################
 
@@ -55,4 +149,3 @@ All error responses are integers.
 102 - Invalid location. The location wasn't found from API.
 103 - Unknown unit format. "unit"-parameter has been something else than "metric" or "imperial".
 104 - Incorrect day ID. The "day"-parameter's value is out of range (0-3)
-1337 - User error. You have failed. Go away.

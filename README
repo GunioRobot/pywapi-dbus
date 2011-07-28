@@ -61,4 +61,12 @@ The setup doesn't install pywapi as Python module
 because pywapi-dbus ships a modified version of it
 which is incompatible with original pywapi.
 
-######################################################
+################### RUNNING ##########################
+
+Pywapi-dbus service can be started by running
+"pywapi-dbus start" in terminal. The service can also
+be stopped by running "pywapi-dbus stop" in terminal.
+For more information, run "pywapi-dbus --help"
+
+Pywapi-dbus can also be started by dbus itself when
+it's needed. Read dbus manuals for howto.

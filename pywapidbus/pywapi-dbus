@@ -18,6 +18,19 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pywapi-dbus.  If not, see <http://www.gnu.org/licenses/>.
 
+# About information, REMEMBER TO CHANGE IN main.py TOO! Should invent a better system here.
+__author__=("Sasu Karttunen")
+__email__=("sasu.karttunen@tpnet.fi")
+__version__=("0.1-git")
+__website__=("https://github.com/skfin/pywapi-dbus")
+
+__help__=("""Usage: %s start|stop|restart
+\nPython Weather API DBus Service (pywapi-dbus)
+Version: """+__version__+"\n"+__website__+"""
+\nOptions:
+  --debug         Starts pywapi-dbus in debug mode
+  --version       Shows version information""")
+
 from sys import argv, exit
 from os import path, makedirs, environ
 from pywapidbus.daemon import Daemon
@@ -33,19 +46,23 @@ DEBUG = False
  
 class MyDaemon(Daemon):
         def run(self):
-                import pywapidbus.main
+                import pywapidbus.main	
  
 if __name__ == "__main__":
         daemon = MyDaemon(pidfileString)
         if len(argv) == 2:
-                if 'start' == argv[1]:
+                if '--version' == argv[1]:
+                        print (__version__)
+                elif '--help' == argv[1]:
+                        print (__help__ % argv[0])
+                elif 'start' == argv[1]:
                         daemon.start(DEBUG)
                 elif 'stop' == argv[1]:
                         daemon.stop()
                 elif 'restart' == argv[1]:
                         daemon.restart(DEBUG)
                 else:
-                        print "Invalid arguments"
+                        print "Invalid arguments.\nUsage: %s start|stop|restart (--debug)" % argv[0]
                         exit(2)
                 exit(0)
         elif len(argv) == 3:
@@ -56,7 +73,7 @@ if __name__ == "__main__":
         				DEBUG = True
         				daemon.restart(DEBUG)
         		else:
-        				print "Invalid arguments"
+        				print "Invalid arguments.\nUsage: %s start|stop|restart (--debug)" % argv[0]
         				exit(2)
         else:
                 print "usage: %s start|stop|restart (--debug)" % argv[0]

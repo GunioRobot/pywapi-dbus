@@ -21,7 +21,7 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1 Beta 2")
+__version__=("0.1-git")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 # Import dbus service and mainloop-glib. Needed to run a dbus service. 
@@ -88,6 +88,7 @@ class GoogleAPI(dbus.service.Object):
         return errSuccess
     
     # Let the client be nice to us and say that it's done it's busines and don't need us anymore :)
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
     def clear(self, sender):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
@@ -267,22 +268,10 @@ class YahooAPI(dbus.service.Object):
         return errSuccess
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def title(self, sender=None):
-        if self.checkIndex(sender) == 100:
-            return errUnregisteredSender
-        return self.clients[sender]['title']
-    
-    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
     def link(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['link']
-    
-    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def htmlDescription(self, sender=None):
-        if self.checkIndex(sender) == 100:
-            return errUnregisteredSender
-        return self.clients[sender]['html_description']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
     def locationCity(self, sender=None):
@@ -351,7 +340,31 @@ class YahooAPI(dbus.service.Object):
         return self.clients[sender]['astronomy']['sunset']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def conditionCode(self, sender=None): # Dont ask what is this because I have no idea
+    def atmosphereHumidity(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['atmosphere']['humidity']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def atmospherePressure(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['atmosphere']['pressure']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def atmosphereRising(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['atmosphere']['rising']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def atmosphereVisibility(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['atmosphere']['visibility']
+    
+    @dbus.service.method('org.pywapi.Daemon', out_signature = 'i', sender_keyword = 'sender')
+    def conditionCode(self, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['condition']['code']
@@ -380,13 +393,31 @@ class YahooAPI(dbus.service.Object):
             return errUnregisteredSender
         return self.clients[sender]['condition']['title']
     
-    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
+    @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', out_signature = 'i', sender_keyword = 'sender')
     def forecastCode(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         if self.checkDay(day) == 104:
             return errIncorrectDayID
         return self.clients[sender]['forecasts'][day]['code']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windChill(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind']['chill']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windDirection(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind']['direction']
+    
+    @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
+    def windSpeed(self, sender=None):
+        if self.checkIndex(sender) == 100:
+            return errUnregisteredSender
+        return self.clients[sender]['wind']['speed']
     
     @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
     def forecastDate(self, day, sender=None):
@@ -405,7 +436,7 @@ class YahooAPI(dbus.service.Object):
         return self.clients[sender]['forecasts'][day]['high']
     
     @dbus.service.method('org.pywapi.Daemon', in_signature = 'i', sender_keyword = 'sender')
-    def forecastTMix(self, day, sender=None):
+    def forecastTMin(self, day, sender=None):
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         if self.checkDay(day) == 104:
@@ -558,7 +589,7 @@ class NoaaAPI(dbus.service.Object):
         return self.clients[sender]['station_id']
     
     @dbus.service.method('org.pywapi.Daemon', sender_keyword = 'sender')
-    def suggestedPickup(self, sender=None):
+    def suggestedPickup(self, sender=None): # ?!?!
         if self.checkIndex(sender) == 100:
             return errUnregisteredSender
         return self.clients[sender]['suggested_pickup']

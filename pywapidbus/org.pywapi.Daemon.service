@@ -1,0 +1,3 @@
+ [D-BUS Service]
+Name=org.pywapi.Daemon
+Exec=@bindir@/pywapi-dbus start
