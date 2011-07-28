@@ -21,7 +21,7 @@
 # About information
 __author__=("Sasu Karttunen")
 __email__=("sasu.karttunen@tpnet.fi")
-__version__=("0.1.1")
+__version__=("0.1-git")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 # Import dbus service and mainloop-glib. Needed to run a dbus service. 
