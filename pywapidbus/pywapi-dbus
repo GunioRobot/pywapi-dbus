@@ -25,7 +25,7 @@ __version__=("0.1-git")
 __website__=("https://github.com/skfin/pywapi-dbus")
 
 __help__=("""Usage: %s start|stop|restart
-\nPython Weather API DBus Service (pywapi-dbus)
+\nD-Bus Python Weather API Service (pywapi-dbus)
 Version: """+__version__+"\n"+__website__+"""
 \nOptions:
   --debug         Starts pywapi-dbus in debug mode
