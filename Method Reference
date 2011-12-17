@@ -5,7 +5,7 @@ org.pywapi.Daemon
 		method void org.pywapi.Weather.city()
 			Replies with city name and a code of state/province (if any) of location.
 		method void org.pywapi.Weather.cityList(QString country)
-			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.	
+			Replies with city list (dictionaries inside) for country. Parameter "country" format is ISO 3166-1 alpha-2.
 		method void org.pywapi.Daemon.clear()
 		    Clears the session with sender client. Intended to be used when client application quits or doesnt need pywapi-dbus anymore. YOU SHOULD DO THIS!
 		method void org.pywapi.Weather.countrylist()
@@ -42,7 +42,7 @@ org.pywapi.Daemon
 			Parameter locale should be ISO 3166-1 alpha-2 country code. It sets the language of replies and units in forecasts.
 		method void org.pywapi.Weather.unitSystem()
 			Replies with the current unit system used. Either "SI" for metric or "US" for imperial.
-	
+
 	org.pywapi.Daemon /YahooAPI
 		method void org.pywapi.Daemon.astronomySunrise()
 			Replies with a sunrise time.
@@ -104,8 +104,8 @@ org.pywapi.Daemon
 			Replies with current wind direction
 		method void org.pywapi.Daemon.windSpeed()
 			Replies with current wind speed.
-	
-	org.pywapi.Daemon /NoaaAPI	
+
+	org.pywapi.Daemon /NoaaAPI
 		method void org.pywapi.Daemon.clear()
 		method void org.pywapi.Daemon.condition()
 		method void org.pywapi.Daemon.dewpoint(QString units)

@@ -43,11 +43,11 @@ if not path.exists(directoryname):
 pidfileString = str(pidfile)
 
 DEBUG = False
- 
+
 class MyDaemon(Daemon):
         def run(self):
-                import pywapidbus.main	
- 
+                import pywapidbus.main
+
 if __name__ == "__main__":
         daemon = MyDaemon(pidfileString)
         if len(argv) == 2:
